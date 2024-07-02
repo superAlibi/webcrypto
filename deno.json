@@ -1,0 +1,9 @@
+{
+  "name": "",
+  "tasks": {
+    "dev": "deno run --watch main.ts"
+  },
+  "test":{
+    "include": ["test/**/*test.ts"]
+  }
+}
