@@ -27,10 +27,10 @@ export class HMAC {
       ["sign", "verify"],
     );
   }
-  public exportKey(key: CryptoKey):Promise<ArrayBuffer> {
+  public exportKey(key: CryptoKey): Promise<ArrayBuffer> {
     return crypto.subtle.exportKey("raw", key);
   }
-  static async GenerateKey():Promise<CryptoKey> {
+  static async GenerateKey(): Promise<CryptoKey> {
     const key = await crypto.subtle.generateKey(
       {
         name: "HMAC",
@@ -41,7 +41,7 @@ export class HMAC {
     );
     return key;
   }
-  static parseKey(serverKey: ArrayBuffer):Promise<CryptoKey> {
+  static parseKey(serverKey: ArrayBuffer): Promise<CryptoKey> {
     return crypto.subtle.importKey(
       "raw",
       serverKey,
@@ -53,7 +53,7 @@ export class HMAC {
       ["sign", "verify"],
     );
   }
-  static async sign(key: CryptoKey, data: ArrayBuffer):Promise<ArrayBuffer> {
+  static async sign(key: CryptoKey, data: ArrayBuffer): Promise<ArrayBuffer> {
     const signature = await crypto.subtle.sign(
       "HMAC",
       key, // 私钥
@@ -61,7 +61,7 @@ export class HMAC {
     );
     return signature;
   }
-  public async sign(data: ArrayBuffer):Promise<ArrayBuffer> {
+  public async sign(data: ArrayBuffer): Promise<ArrayBuffer> {
     await this.initCryptoKey();
 
     return HMAC.sign(this.#cryptoKey!, data);
@@ -70,7 +70,7 @@ export class HMAC {
     publicKey: CryptoKey | ArrayBuffer | Uint8Array,
     signature: ArrayBuffer,
     data: ArrayBuffer,
-  ):Promise<boolean> {
+  ): Promise<boolean> {
     if (publicKey instanceof ArrayBuffer) {
       publicKey = await HMAC.parseKey(publicKey);
     }
@@ -82,7 +82,10 @@ export class HMAC {
     );
     return isValid;
   }
-  public async verify(signature: ArrayBuffer, data: ArrayBuffer):Promise<boolean> {
+  public async verify(
+    signature: ArrayBuffer,
+    data: ArrayBuffer,
+  ): Promise<boolean> {
     await this.initCryptoKey();
     return HMAC.verify(this.#cryptoKey!, signature, data);
   }

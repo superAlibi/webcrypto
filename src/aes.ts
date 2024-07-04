@@ -11,7 +11,7 @@ export class AESCBC {
       this.#key = key;
     }
   }
-  static parseKey(serverKey: ArrayBuffer):Promise<CryptoKey> {
+  static parseKey(serverKey: ArrayBuffer): Promise<CryptoKey> {
     return crypto.subtle.importKey(
       "raw",
       serverKey,
@@ -35,7 +35,7 @@ export class AESCBC {
   async encrypt(
     plaintext: ArrayBuffer | Uint8Array,
     iv: ArrayBuffer | Uint8Array,
-  ):Promise<ArrayBuffer> {
+  ): Promise<ArrayBuffer> {
     if (!this.#cryptoKey) {
       await this.initCryptoKey();
     }
@@ -49,7 +49,7 @@ export class AESCBC {
   async decrypt(
     ciphertext: ArrayBuffer | Uint8Array,
     iv: ArrayBuffer | Uint8Array,
-  ):Promise<ArrayBuffer> {
+  ): Promise<ArrayBuffer> {
     if (!this.#cryptoKey) {
       await this.initCryptoKey();
     }

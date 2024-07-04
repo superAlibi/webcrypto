@@ -9,7 +9,7 @@ export class RSAOAEP {
    * @param key 公钥arraybuffer
    * @returns
    */
-  static parsePublicKey(key: ArrayBuffer):Promise<CryptoKey> {
+  static parsePublicKey(key: ArrayBuffer): Promise<CryptoKey> {
     return crypto.subtle.importKey(
       "spki",
       key,
@@ -27,7 +27,7 @@ export class RSAOAEP {
    * 生成共私钥对,但并不重写内部的密钥对
    * @returns
    */
-  static GenerateKeyPair():Promise<CryptoKeyPair> {
+  static GenerateKeyPair(): Promise<CryptoKeyPair> {
     return crypto.subtle.generateKey(
       {
         name: "RSA-OAEP",
@@ -54,7 +54,7 @@ export class RSAOAEP {
    * 导出内部的密钥
    * @returns 导出格式为arraybuffer的公钥
    */
-  public async exportPublicKey():Promise<ArrayBuffer> {
+  public async exportPublicKey(): Promise<ArrayBuffer> {
     await this.initCryptKey();
 
     return crypto.subtle.exportKey(
@@ -66,7 +66,7 @@ export class RSAOAEP {
    * 给出原始的公钥对象
    * @returns
    */
-  public async publicKey():Promise<CryptoKey> {
+  public async publicKey(): Promise<CryptoKey> {
     await this.initCryptKey();
 
     return this.#cryptoKeyPair!.publicKey;
@@ -80,7 +80,7 @@ export class RSAOAEP {
   static async encrypt(
     publickKey: ArrayBuffer | Uint8Array | CryptoKey,
     plaintext: ArrayBuffer,
-  ) :Promise<ArrayBuffer>{
+  ): Promise<ArrayBuffer> {
     if ((publickKey instanceof ArrayBuffer)) {
       publickKey = await RSAOAEP.parsePublicKey(publickKey);
     }
@@ -97,7 +97,7 @@ export class RSAOAEP {
    * @param plaintext
    * @returns
    */
-  public async encrypt(plaintext: ArrayBuffer):Promise<ArrayBuffer> {
+  public async encrypt(plaintext: ArrayBuffer): Promise<ArrayBuffer> {
     await this.initCryptKey();
 
     return RSAOAEP.encrypt(this.#cryptoKeyPair!.publicKey, plaintext);
@@ -108,7 +108,10 @@ export class RSAOAEP {
    * @param data 原始数据buffer
    * @returns
    */
-  static decrypt(privateKey: CryptoKey, ciphertext: ArrayBuffer):Promise<ArrayBuffer> {
+  static decrypt(
+    privateKey: CryptoKey,
+    ciphertext: ArrayBuffer,
+  ): Promise<ArrayBuffer> {
     return crypto.subtle.decrypt(
       {
         name: "RSA-OAEP",
@@ -122,7 +125,7 @@ export class RSAOAEP {
    * @param ciphertext
    * @returns
    */
-  public async decrypt(ciphertext: ArrayBuffer):Promise<ArrayBuffer> {
+  public async decrypt(ciphertext: ArrayBuffer): Promise<ArrayBuffer> {
     if (!this.#cryptoKeyPair) {
       await this.initCryptKey();
     }
@@ -136,7 +139,7 @@ export class RSAOAEP {
  */
 export class RSAPSS {
   #cryptoKeyPair?: CryptoKeyPair;
-  static GenerateKey():Promise<CryptoKeyPair> {
+  static GenerateKey(): Promise<CryptoKeyPair> {
     return crypto.subtle.generateKey(
       {
         name: "RSA-PSS",
@@ -150,7 +153,7 @@ export class RSAPSS {
       ["sign", "verify"],
     );
   }
-  public async exportPublicKey():Promise<ArrayBuffer> {
+  public async exportPublicKey(): Promise<ArrayBuffer> {
     await this.initCryptoPair();
 
     return crypto.subtle.exportKey(
@@ -161,7 +164,9 @@ export class RSAPSS {
   /**
    * 解析公钥
    */
-  static parsePublickKey(publicKey: ArrayBuffer | Uint8Array):Promise<CryptoKey> {
+  static parsePublickKey(
+    publicKey: ArrayBuffer | Uint8Array,
+  ): Promise<CryptoKey> {
     return crypto.subtle.importKey(
       "spki",
       publicKey,
@@ -177,7 +182,10 @@ export class RSAPSS {
     if (this.#cryptoKeyPair && !force) return;
     return this.#cryptoKeyPair = await RSAPSS.GenerateKey();
   }
-  static async sign(privateKey: CryptoKey, data: ArrayBuffer):Promise<ArrayBuffer> {
+  static async sign(
+    privateKey: CryptoKey,
+    data: ArrayBuffer,
+  ): Promise<ArrayBuffer> {
     const signature = await crypto.subtle.sign(
       {
         name: "RSA-PSS",
@@ -188,7 +196,7 @@ export class RSAPSS {
     );
     return signature;
   }
-  public async sign(data: ArrayBuffer):Promise<ArrayBuffer> {
+  public async sign(data: ArrayBuffer): Promise<ArrayBuffer> {
     await this.initCryptoPair();
 
     return RSAPSS.sign(this.#cryptoKeyPair!.privateKey, data);
@@ -197,7 +205,7 @@ export class RSAPSS {
     publicKey: CryptoKey | ArrayBuffer | Uint8Array,
     signature: ArrayBuffer,
     data: ArrayBuffer,
-  ):Promise<boolean> {
+  ): Promise<boolean> {
     if (publicKey instanceof ArrayBuffer) {
       publicKey = await RSAPSS.parsePublickKey(publicKey);
     }
@@ -212,7 +220,10 @@ export class RSAPSS {
     );
     return isValid;
   }
-  public async verify(signature: ArrayBuffer, data: ArrayBuffer):Promise<boolean> {
+  public async verify(
+    signature: ArrayBuffer,
+    data: ArrayBuffer,
+  ): Promise<boolean> {
     await this.initCryptoPair();
 
     return RSAPSS.verify(this.#cryptoKeyPair!.publicKey, signature, data);
@@ -227,14 +238,14 @@ export class RSAPSS {
  */
 export class RSASSA_PKCS_1v1$5 {
   #cryptoKeyPair?: CryptoKeyPair;
-  public async exportPublicKey():Promise<ArrayBuffer> {
+  public async exportPublicKey(): Promise<ArrayBuffer> {
     await this.initCryptoPair();
     return crypto.subtle.exportKey(
       "spki",
       this.#cryptoKeyPair!.publicKey,
     );
   }
-  static GenerateKey():Promise<CryptoKeyPair> {
+  static GenerateKey(): Promise<CryptoKeyPair> {
     return crypto.subtle.generateKey(
       {
         name: "RSASSA-PKCS1-v1_5",
@@ -248,7 +259,9 @@ export class RSASSA_PKCS_1v1$5 {
       ["sign", "verify"],
     );
   }
-  static parsePublickKey(publicKey: ArrayBuffer | Uint8Array):Promise<CryptoKey> {
+  static parsePublickKey(
+    publicKey: ArrayBuffer | Uint8Array,
+  ): Promise<CryptoKey> {
     return crypto.subtle.importKey(
       "spki",
       publicKey,
@@ -264,7 +277,7 @@ export class RSASSA_PKCS_1v1$5 {
     if (this.#cryptoKeyPair && !force) return;
     return this.#cryptoKeyPair = await RSASSA_PKCS_1v1$5.GenerateKey();
   }
-  static sign(privateKey: CryptoKey, data: ArrayBuffer):Promise<ArrayBuffer> {
+  static sign(privateKey: CryptoKey, data: ArrayBuffer): Promise<ArrayBuffer> {
     return crypto.subtle.sign(
       {
         name: "RSASSA-PKCS1-v1_5",
@@ -277,7 +290,7 @@ export class RSASSA_PKCS_1v1$5 {
     publicKey: CryptoKey,
     signature: ArrayBuffer,
     data: ArrayBuffer,
-  ):Promise<boolean> {
+  ): Promise<boolean> {
     return crypto.subtle.verify(
       {
         name: "RSASSA-PKCS1-v1_5",
@@ -287,12 +300,15 @@ export class RSASSA_PKCS_1v1$5 {
       data,
     );
   }
-  public async sign(data: ArrayBuffer):Promise<ArrayBuffer> {
+  public async sign(data: ArrayBuffer): Promise<ArrayBuffer> {
     await this.initCryptoPair();
 
     return RSASSA_PKCS_1v1$5.sign(this.#cryptoKeyPair!.privateKey, data);
   }
-  public async verify(signature: ArrayBuffer, data: ArrayBuffer):Promise<boolean> {
+  public async verify(
+    signature: ArrayBuffer,
+    data: ArrayBuffer,
+  ): Promise<boolean> {
     await this.initCryptoPair();
     return RSASSA_PKCS_1v1$5.verify(
       this.#cryptoKeyPair!.publicKey,
