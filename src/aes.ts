@@ -1,4 +1,5 @@
 /**
+ * aes cbc ,secret key 为 128bit
  * @description aes cbc hash-128
  */
 export class AESCBC {
