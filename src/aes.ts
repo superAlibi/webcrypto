@@ -1,6 +1,5 @@
 /**
  * @description aes cbc hash-128
- * 
  */
 export class AESCBC {
   #key?: ArrayBuffer | Uint8Array;
@@ -12,7 +11,7 @@ export class AESCBC {
       this.#key = key;
     }
   }
-  static parseKey(serverKey: ArrayBuffer) {
+  static parseKey(serverKey: ArrayBuffer):Promise<CryptoKey> {
     return crypto.subtle.importKey(
       "raw",
       serverKey,
@@ -25,13 +24,9 @@ export class AESCBC {
     if (this.#cryptoKey && !force) {
       return;
     }
-    if (!this.#key) {
-      console.error("意外的初始化:无效的密钥");
-      return;
-    }
     this.#cryptoKey = await crypto.subtle.importKey(
       "raw",
-      this.#key,
+      this.#key!,
       { name: "AES-CBC", length: 128 },
       true,
       ["encrypt", "decrypt"],
@@ -40,7 +35,7 @@ export class AESCBC {
   async encrypt(
     plaintext: ArrayBuffer | Uint8Array,
     iv: ArrayBuffer | Uint8Array,
-  ) {
+  ):Promise<ArrayBuffer> {
     if (!this.#cryptoKey) {
       await this.initCryptoKey();
     }
@@ -54,7 +49,7 @@ export class AESCBC {
   async decrypt(
     ciphertext: ArrayBuffer | Uint8Array,
     iv: ArrayBuffer | Uint8Array,
-  ) {
+  ):Promise<ArrayBuffer> {
     if (!this.#cryptoKey) {
       await this.initCryptoKey();
     }
