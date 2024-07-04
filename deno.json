@@ -5,6 +5,7 @@
   "tasks": {
     "test": "deno test"
   },
+  "repository": "https://gitee.com/alibi-jia/web_crypto.git",
   "test": {
     "include": ["test/**/*test.ts"]
   }
