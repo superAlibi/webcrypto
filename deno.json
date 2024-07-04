@@ -1,11 +1,21 @@
 {
   "name": "@advanced/crypto",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "exports": "./mod.ts",
   "tasks": {
     "test": "deno test"
   },
   "test": {
     "include": ["test/**/*test.ts"]
+  },
+  "publish": {
+    "include": [
+      "LICENSE",
+      "README.md",
+      "./mod.ts"
+    ],
+    "exclude": [
+      "src/**/*test.ts"
+    ]
   }
 }
